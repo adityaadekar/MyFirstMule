@@ -17,30 +17,19 @@ http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mul
 	<flow name="myprojectFlow2" doc:id="a98a0720-fd04-426e-9360-95ae0c42726a" >
 		<http:listener doc:name="Listener" doc:id="c577a8ca-140f-445f-b0fd-95a338630f38" config-ref="HTTP_Listener_config" path="/async"/>
 		<set-payload value="#[[1,2,3,4,5,6,7,8,9]]" doc:name="Set Payload" doc:id="7cc81359-9ff2-48b4-bc02-d557a20e2308" />
-		<batch:job jobName="myprojectBatch_Job" doc:id="91502307-2aaf-4be9-855a-d549bbfed674" blockSize="4">
-			<batch:process-records >
-				<batch:step name="Batch_Step" doc:id="0408448e-b6a9-464a-8fdb-43912d872dab" >
-					<logger level="INFO" doc:name="Logger" doc:id="e272aebd-b161-4fc9-9317-3bb4fe1d8f8b" message='#["in batch processors" ++ (payload as String)]'/>
-					<batch:aggregator doc:name="Batch Aggregator" doc:id="9c53f187-059a-437d-9fa0-c009688d93ee" size="4">
-						<logger level="INFO" doc:name="Logger" doc:id="86d1e425-b3ef-49fc-bda8-e915c89d99ba" message='#[%dw 2.0&#10;output application/json&#10;---&#10;"in batch aggregations" ++ (payload joinBy ("-"))]'/>
-					</batch:aggregator>
-				</batch:step>
-			</batch:process-records>
-			<batch:on-complete >
-				<logger level="INFO" doc:name="Logger" doc:id="4fac2a16-26cb-4073-afdf-ead8243d3979" message='#[output application/json&#10;---&#10;payload]'/>
-			</batch:on-complete>
-		</batch:job>
-		<logger level="INFO" doc:name="Logger" doc:id="41f12179-a571-47e6-a13f-4bee51462b4e" message="after batch"/>
-		<logger level="INFO" doc:name="Copy_of_Logger" doc:id="1e76ca92-a41a-4fc8-be70-a50e8b8fa222" message='#[payload]' />
-	</flow>
-	<flow name="myprojectFlow" doc:id="f9925d30-619d-40de-859f-0fc79ed7d290" >
-		<http:listener doc:name="Listener" doc:id="904dc994-31c0-49b6-adb9-460b0326698e" config-ref="HTTP_Listener_config" path="/foreach"/>
-		<set-payload value="#[output Application/json&#10;---&#10;[1,2,3,4,5,6,7,8,9]]" doc:name="Set Payload" doc:id="14924d0c-24dd-4b5e-b468-5f4f112bf6d9" />
-		<set-variable value="#[0]" doc:name="Set Variable" doc:id="7fc045f2-bc91-4e74-a85a-fae1e290b4b2" variableName="b"/>
-		<foreach doc:name="For Each" doc:id="a8f3a1f2-eaf9-48c1-ab60-750a2a457a5a" />
-		<parallel-foreach doc:name="Parallel For Each" doc:id="b178f906-8deb-4044-ad69-b7ce627add23" >
-			<set-variable value="a" doc:name="Set Variable" doc:id="3222382c-cb31-4728-90d6-3b005e536068" variableName="a"/>
-		</parallel-foreach>
-		<logger level="INFO" doc:name="Logger" doc:id="85b55788-35ed-469e-a466-72cda0f7c6fd" message="#[vars]"/>
+		<set-variable value="#[0]" doc:name="Set Variable" doc:id="7549882f-b1b4-4a60-a6f1-0802a83a4c7c" variableName="a"/>
+		<foreach doc:name="For Each" doc:id="eee0c84d-1a36-485f-9d4c-450b212ae1f3" >
+			<set-variable value="#[vars.a + (payload as Number)]" doc:name="Set Variable" doc:id="46a13ab8-f12d-472a-bce8-a58dfa29076c" variableName="a"/>
+		</foreach>
+		<ee:transform doc:name="Transform Message" doc:id="44d149f0-3c9a-4c3a-9c24-2f87d01acbea" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"a" : vars.a
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
 	</flow>
 </mule>

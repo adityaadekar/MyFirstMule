@@ -30,6 +30,20 @@
 				<version>${mule.maven.plugin.version}</version>
 				<extensions>true</extensions>
 				<configuration>
+				<cloudHubDeployment>
+				  <uri>https://anypoint.mulesoft.com</uri>
+			      <muleVersion>4.3.0</muleVersion>
+			      <username>adityaadekarvit</username>
+			      <password>Latur123*Latur123*</password>
+			      <applicationName>mule-maven-project-tutorial</applicationName>
+			      <environment>Sandbox</environment>   
+			      <workers>1</workers>
+			      <workerType>MICRO</workerType>
+			      <properties>
+				    <maven.compiler.target>1.8</maven.compiler.target>
+				    <maven.compiler.source>1.8</maven.compiler.source>
+				</properties>
+			    </cloudHubDeployment>
 				<sharedLibraries>
                         <sharedLibrary>
                             <groupId>org.codehaus.groovy</groupId>
